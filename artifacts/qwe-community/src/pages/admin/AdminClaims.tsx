@@ -100,7 +100,7 @@ export default function AdminClaims() {
   const updateMutation = useUpdateClaimStatus();
 
   const handleStatusChange = (id: number, status: any) => {
-    updateMutation.mutate({ id, data: { status, adminNotes: undefined } }, {
+    updateMutation.mutate({ id, body: { status, adminNotes: undefined } }, {
       onSuccess: () => {
         toast.success("Claim status updated");
         queryClient.invalidateQueries({ queryKey: getGetClaimsQueryKey() });
