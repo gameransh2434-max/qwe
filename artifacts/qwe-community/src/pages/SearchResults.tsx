@@ -9,7 +9,7 @@ export default function SearchResults() {
   const queryParams = new URLSearchParams(window.location.search);
   const q = queryParams.get("q") || "";
 
-  const { data: results, isLoading } = useSearch({ q }, { query: { enabled: !!q } });
+  const { data: results, isLoading } = useSearch(q, { query: { queryKey: [`/api/search`, q], enabled: !!q } });
 
   return (
     <AppLayout>

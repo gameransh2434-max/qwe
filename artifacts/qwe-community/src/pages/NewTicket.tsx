@@ -32,9 +32,7 @@ export default function NewTicket() {
   });
 
   const onSubmit = (values: z.infer<typeof newTicketSchema>) => {
-    createMutation.mutate({
-      data: values
-    }, {
+    createMutation.mutate(values, {
       onSuccess: (data) => {
         toast.success("Channel Established");
         queryClient.invalidateQueries({ queryKey: getGetTicketsQueryKey() });

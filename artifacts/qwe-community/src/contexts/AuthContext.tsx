@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // After login(), user is already set so we skip this call entirely → no loop
   const { data: fetchedUser, isLoading, error, refetch } = useGetMe({
     query: {
+      queryKey: [`/api/auth/me`],
       enabled: !!token && !user,
       retry: false,
       staleTime: Infinity,

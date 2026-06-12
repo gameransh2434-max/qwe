@@ -19,7 +19,7 @@ export default function Notifications() {
   };
 
   const handleMarkRead = (id: number) => {
-    markReadMutation.mutate({ id }, {
+    markReadMutation.mutate(id, {
       onSuccess: () => queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() })
     });
   };

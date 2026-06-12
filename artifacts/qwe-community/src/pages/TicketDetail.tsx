@@ -38,7 +38,7 @@ export default function TicketDetail() {
 
     sendMutation.mutate({
       id,
-      data: { content }
+      body: { content }
     }, {
       onSuccess: () => {
         setContent("");
