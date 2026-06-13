@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, usersTable, rewardsTable, claimsTable, categoriesTable, notificationsTable, announcementsTable } from "@workspace/db";
-import { eq, sql, count } from "drizzle-orm";
+import { eq, sql, count, or } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import { logger } from "../lib/logger";
 import { GetLeaderboardQueryParams } from "@workspace/api-zod";
@@ -12,7 +12,7 @@ router.get("/stats", async (_req, res) => {
     const [totalUsersResult] = await db.select({ count: count() }).from(usersTable);
     const [totalRewardsResult] = await db.select({ count: count() }).from(rewardsTable);
     const [totalClaimsResult] = await db.select({ count: count() }).from(claimsTable);
-    const [approvedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(eq(claimsTable.status, "approved"));
+    const [approvedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(or(eq(claimsTable.status, "approved"), eq(claimsTable.status, "completed")));
     const [categoriesResult] = await db.select({ count: count() }).from(categoriesTable);
     const [pendingClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(eq(claimsTable.status, "pending"));
 
@@ -99,7 +99,7 @@ router.get("/users/activity", async (_req, res) => {
     .from(claimsTable)
     .leftJoin(usersTable, eq(claimsTable.userId, usersTable.id))
     .leftJoin(rewardsTable, eq(claimsTable.rewardId, rewardsTable.id))
-    .where(eq(claimsTable.status, "approved"))
+    .where(or(eq(claimsTable.status, "approved"), eq(claimsTable.status, "completed")))
     .orderBy(sql`${claimsTable.updatedAt} DESC`)
     .limit(5);
 

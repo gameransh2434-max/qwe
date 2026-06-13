@@ -137,6 +137,16 @@ router.patch("/claims/:id/status", requireAdmin, async (req: AuthRequest, res) =
     return;
   }
   try {
+    const [existing] = await db.select({ status: claimsTable.status, userId: claimsTable.userId })
+      .from(claimsTable)
+      .where(eq(claimsTable.id, paramsParsed.data.id))
+      .limit(1);
+
+    if (!existing) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
     const [claim] = await db.update(claimsTable)
       .set({
         status: bodyParsed.data.status,
@@ -151,7 +161,9 @@ router.patch("/claims/:id/status", requireAdmin, async (req: AuthRequest, res) =
       return;
     }
 
-    if (bodyParsed.data.status === "approved" || bodyParsed.data.status === "completed") {
+    const newIsCountable = bodyParsed.data.status === "approved" || bodyParsed.data.status === "completed";
+    const oldIsCountable = existing.status === "approved" || existing.status === "completed";
+    if (newIsCountable && !oldIsCountable) {
       await db.update(usersTable)
         .set({ approvedClaims: sql`${usersTable.approvedClaims} + 1` })
         .where(eq(usersTable.id, claim.userId));
