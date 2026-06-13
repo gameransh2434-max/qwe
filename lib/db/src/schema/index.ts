@@ -103,3 +103,11 @@ export const announcementsTable = pgTable("announcements", {
   isPinned: boolean("is_pinned").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const worldChatTable = pgTable("world_chat", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull(),
+  userId: integer("user_id"),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

@@ -5,6 +5,7 @@ import { Link } from "wouter";
 import { Users, Trophy, Zap, ChevronRight, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { WorldChat } from "@/components/WorldChat";
 
 export default function Home() {
   const { data: stats } = useGetStats();
@@ -143,6 +144,11 @@ export default function Home() {
 
           {/* Right sidebar */}
           <div className="space-y-6">
+            {/* World Chat */}
+            <div>
+              <WorldChat />
+            </div>
+
             <CyberCard className="p-5">
               <h3 className="text-sm font-bold uppercase tracking-widest mb-4 border-b border-border/50 pb-2">
                 Top Earners
