@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, usersTable, rewardsTable, claimsTable, categoriesTable, notificationsTable, announcementsTable } from "@workspace/db";
-import { eq, sql, count, or } from "drizzle-orm";
+import { eq, sql, count, or, and } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import { logger } from "../lib/logger";
 import { GetLeaderboardQueryParams } from "@workspace/api-zod";
@@ -33,11 +33,11 @@ router.get("/stats", async (_req, res) => {
 router.get("/users/dashboard", requireAuth, async (req: AuthRequest, res) => {
   try {
     const [totalClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(eq(claimsTable.userId, req.user!.id));
-    const [pendingClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(eq(claimsTable.userId, req.user!.id)).where(eq(claimsTable.status, "pending"));
-    const [approvedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(eq(claimsTable.userId, req.user!.id)).where(eq(claimsTable.status, "approved"));
-    const [rejectedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(eq(claimsTable.userId, req.user!.id)).where(eq(claimsTable.status, "rejected"));
-    const [completedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(eq(claimsTable.userId, req.user!.id)).where(eq(claimsTable.status, "completed"));
-    const [unreadNotifResult] = await db.select({ count: count() }).from(notificationsTable).where(eq(notificationsTable.userId, req.user!.id)).where(eq(notificationsTable.isRead, false));
+    const [pendingClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(and(eq(claimsTable.userId, req.user!.id), eq(claimsTable.status, "pending")));
+    const [approvedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(and(eq(claimsTable.userId, req.user!.id), eq(claimsTable.status, "approved")));
+    const [rejectedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(and(eq(claimsTable.userId, req.user!.id), eq(claimsTable.status, "rejected")));
+    const [completedClaimsResult] = await db.select({ count: count() }).from(claimsTable).where(and(eq(claimsTable.userId, req.user!.id), eq(claimsTable.status, "completed")));
+    const [unreadNotifResult] = await db.select({ count: count() }).from(notificationsTable).where(and(eq(notificationsTable.userId, req.user!.id), eq(notificationsTable.isRead, false)));
 
     const recentClaims = await db.select({
       id: claimsTable.id,
